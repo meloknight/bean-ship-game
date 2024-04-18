@@ -14,7 +14,7 @@ const useFrameLoop = (callback: any) => {
   useEffect(() => {
     requestID.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(requestID.current);
-  });
+  }, []);
 };
 
 export { useFrameLoop };

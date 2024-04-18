@@ -1,25 +1,27 @@
 import { useState, useEffect, useRef } from "react";
 import { useFrameLoop } from "./utils/frameLoop";
-// import viteLogo from "./assets/sprites/vite.svg";
-// import testShip from "./assets/sprites/test.svg";
+import { handleKeyDown, handleKeyUp } from "./utils/keyPresses";
+import {
+  backgroundColorChanger,
+  updateShipDirection,
+  updateShipPosition,
+  shipReset,
+  bounceShipOffWall,
+} from "./utils/loopFunctions";
 import "./App.css";
 
 function App() {
-  // CONSTANTS
   const SHIP_ANGLE_CONSTANT: number = 0.1;
-
   const [time, setTime] = useState(0);
   const [deltaTime, setDeltaTime] = useState(0);
-
   const shipParams = useRef({
     shipAngle: 0,
-    shipX: 600,
-    shipY: 200,
+    shipX: 200,
+    shipY: 350,
     shipSpeedX: 0,
     shipSpeedY: 0,
-    shipAcceleration: 200,
+    shipAcceleration: 100,
   });
-
   const shipActionFlagsRef = useRef({
     directionLeftIsActive: false,
     directionRightIsActive: false,
@@ -27,101 +29,43 @@ function App() {
     directionDownIsActive: false,
     spacebarIsActive: false,
   });
-
-  // for the background color change animation
   const [color, setColor] = useState("");
   let nextColor = -1;
 
+  // THE BIG LOOP!
   useFrameLoop((time: number, deltaTime: number) => {
-    // logic
-    if (time > nextColor) {
-      nextColor = time + 2000;
-      setColor("#" + Math.floor(Math.random() * 16777215).toString(16));
-    }
+    backgroundColorChanger(time, nextColor, setColor);
 
-    // update the angle the ship is facing
-    if (shipActionFlagsRef.current.directionRightIsActive) {
-      if (shipParams.current.shipAngle + SHIP_ANGLE_CONSTANT >= 2 * Math.PI) {
-        shipParams.current.shipAngle = 0;
-      } else {
-        shipParams.current.shipAngle += SHIP_ANGLE_CONSTANT;
-      }
-    }
-    if (shipActionFlagsRef.current.directionLeftIsActive) {
-      if (shipParams.current.shipAngle - SHIP_ANGLE_CONSTANT <= 0) {
-        shipParams.current.shipAngle = 2 * Math.PI;
-      } else {
-        shipParams.current.shipAngle -= SHIP_ANGLE_CONSTANT;
-      }
-    }
+    updateShipDirection(shipActionFlagsRef, shipParams, SHIP_ANGLE_CONSTANT);
 
-    const unitY = Math.sin(shipParams.current.shipAngle);
-    const unitX = Math.cos(shipParams.current.shipAngle);
-    let accelX = 0;
-    let accelY = 0;
+    updateShipPosition(shipParams, shipActionFlagsRef, deltaTime);
+    console.log(window.innerWidth);
 
-    // update the velocity when the ship is accelerating
-    if (shipActionFlagsRef.current.directionUpIsActive) {
-      accelX = unitX * shipParams.current.shipAcceleration;
-      accelY = unitY * shipParams.current.shipAcceleration;
-
-      shipParams.current.shipSpeedX +=
-        unitX * shipParams.current.shipAcceleration * (deltaTime / 1000);
-      shipParams.current.shipSpeedY +=
-        unitY * shipParams.current.shipAcceleration * (deltaTime / 1000);
-    }
-
-    shipParams.current.shipX +=
-      shipParams.current.shipSpeedX * (deltaTime / 1000) +
-      0.5 * accelX * (deltaTime / 1000) ** 2;
-
-    shipParams.current.shipY +=
-      shipParams.current.shipSpeedY * (deltaTime / 1000) +
-      0.5 * accelY * (deltaTime / 1000) ** 2;
+    bounceShipOffWall(shipParams);
 
     setTime(time);
     setDeltaTime(deltaTime);
   });
 
-  const handleKeyDown = (event: any) => {
-    if (event.key === "ArrowLeft" || event.key === "a") {
-      shipActionFlagsRef.current.directionLeftIsActive = true;
-    } else if (event.key === "ArrowRight" || event.key === "d") {
-      shipActionFlagsRef.current.directionRightIsActive = true;
-    } else if (event.key === "ArrowUp" || event.key === "w") {
-      shipActionFlagsRef.current.directionUpIsActive = true;
-    } else if (event.key === "ArrowDown" || event.key === "s") {
-      shipActionFlagsRef.current.directionDownIsActive = true;
-    } else if (event.key === " ") {
-      shipActionFlagsRef.current.spacebarIsActive = true;
-    }
-  };
-
-  const handleKeyUp = (event: any) => {
-    if (event.key === "ArrowLeft" || event.key === "a") {
-      shipActionFlagsRef.current.directionLeftIsActive = false;
-    } else if (event.key === "ArrowRight" || event.key === "d") {
-      shipActionFlagsRef.current.directionRightIsActive = false;
-    } else if (event.key === "ArrowUp" || event.key === "w") {
-      shipActionFlagsRef.current.directionUpIsActive = false;
-    } else if (event.key === "ArrowDown" || event.key === "s") {
-      shipActionFlagsRef.current.directionDownIsActive = false;
-    } else if (event.key === " ") {
-      shipActionFlagsRef.current.spacebarIsActive = false;
-    }
-  };
-
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", () =>
+      handleKeyDown(event, shipActionFlagsRef)
+    );
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", () =>
+        handleKeyDown(event, shipActionFlagsRef)
+      );
     };
   }, []);
 
   useEffect(() => {
-    document.addEventListener("keyup", handleKeyUp);
+    document.addEventListener("keyup", () =>
+      handleKeyUp(event, shipActionFlagsRef)
+    );
     return () => {
-      document.removeEventListener("keyup", handleKeyUp);
+      document.removeEventListener("keyup", () =>
+        handleKeyUp(event, shipActionFlagsRef)
+      );
     };
   }, []);
 
@@ -129,24 +73,11 @@ function App() {
     const shipStyle = {
       transform: `translateX(${shipParams.current.shipX}px) translateY(${shipParams.current.shipY}px) rotate(${shipParams.current.shipAngle}rad)`,
     };
-
     return (
       <>
-        {/* <img
-          src={viteLogo}
-          className="logo vite-ship"
-          alt="Vite logo"
-          style={{ transform: `rotate(${shipParams.current.shipAngle}deg)` }}
-        /> */}
-        {/* <img
-          src={testShip}
-          style={{
-            height: 100,
-            transform: `rotate(${shipParams.current.shipAngle}deg)`,
-          }}
-        /> */}
-        <div className="filler-ship" style={shipStyle}>
+        <div className="pill-ship" style={shipStyle}>
           <div
+            // ref={shipElementRef}
             className={`ship-flame-off ${
               shipActionFlagsRef.current.directionUpIsActive === true
                 ? "ship-flame"
@@ -163,21 +94,61 @@ function App() {
       <Ship />
       <div className="top-left-container">
         <p>Time:</p>
-        <p>{time}</p>
+        <p>{parseFloat(time.toPrecision(5))}</p>
         <p>deltaTime:</p>
-        <p>{deltaTime}</p>
-        <p>shipAngle: {shipParams.current.shipAngle}</p>
-        <p>shipX: {shipParams.current.shipX}</p>
-        <p>shipY: {shipParams.current.shipY}</p>
-        <p>shipSpeedX: {shipParams.current.shipSpeedX}</p>
-        <p>shipSpeedY: {shipParams.current.shipSpeedY}</p>
-        <p>shipAcceleration: {shipParams.current.shipAcceleration}</p>
-      </div>
-      <div className="card">
-        <button>ShipAngle is {shipParams.current.shipAngle}</button>
+        <p>{parseFloat(deltaTime.toPrecision(5))}</p>
+        <p>
+          shipAngle: {parseFloat(shipParams.current.shipAngle.toPrecision(3))}
+        </p>
+        <p>shipX: {parseFloat(shipParams.current.shipX.toPrecision(3))}</p>
+        <p>shipY: {parseFloat(shipParams.current.shipY.toPrecision(3))}</p>
+        <p>
+          shipSpeedX: {parseFloat(shipParams.current.shipSpeedX.toPrecision(3))}
+        </p>
+        <p>
+          shipSpeedY: {parseFloat(shipParams.current.shipSpeedY.toPrecision(3))}
+        </p>
+        <p>
+          shipAcceleration:{" "}
+          {parseFloat(shipParams.current.shipAcceleration.toPrecision(3))}
+        </p>
+        <button onClick={() => shipReset(shipParams)}>RESET</button>
       </div>
     </div>
   );
 }
 
 export default App;
+
+// REMOVED BUT WANT TO KEEP FOR INFO PURPOSES
+
+// STAR FLARE STUFF
+// const STAR_FLARE_ROTATION_CONSTANT: number = 0.01;
+// const starFlareParams = useRef({
+//   objectX: 300,
+//   objectY: 400,
+//   objectAngle: 0,
+// });
+// function updateStarFlareDirection(
+//   isRotating: boolean,
+//   starFlareParams: any,
+//   rotationConstant: number = 0
+// ) {
+//   if (isRotating === true) {
+//     starFlareParams.current.objectAngle += rotationConstant;
+//   }
+// }
+// updateStarFlareDirection(true, starFlareParams, STAR_FLARE_ROTATION_CONSTANT);
+
+// function StarFlare() {
+//   const starFlareStyle = {
+//     top: starFlareParams.current.objectY,
+//     left: starFlareParams.current.objectX,
+//     transform: `rotate(${starFlareParams.current.objectAngle}rad)`,
+//   };
+//   return (
+//     <>
+//       <div style={starFlareStyle} className="star-flare-container"></div>
+//     </>
+//   );
+// }
