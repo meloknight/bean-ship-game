@@ -13,3 +13,4 @@ This little project took about 3 days of work and some of the biggest lessons le
 -how to work with a variety of hooks in React. I had to try a number of methods before I could appropriately update the ship how I wanted to.
 -that if I were to redo this project, I would likely aim to have the React components and most logic as seperate as I can have them so that component state and game logic don't get too tangled.
 -I think React is certainly much better at event based games (basically no game loop required) like a card game or tile based adventure game. This is mainly because React's ability to track state would be very helpful in those games and a re-render upon state update would be great.
+-Finally, I used this as an opportunity to work with TypeScript and learn it more deeply. I aimed not to simply add "any" to things that gave me trouble.

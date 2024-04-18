@@ -1,6 +1,8 @@
+import { ShipParamsType, ShipActionFlagsRefType } from "../types";
+
 export function backgroundColorChanger(
   time: number,
-  nextColor: any,
+  nextColor: number,
   setColor: any
 ) {
   if (time > nextColor) {
@@ -10,8 +12,8 @@ export function backgroundColorChanger(
 }
 
 export function updateShipDirection(
-  shipActionFlagsRef: any,
-  shipParams: any,
+  shipActionFlagsRef: ShipActionFlagsRefType,
+  shipParams: ShipParamsType,
   SHIP_ANGLE_CONSTANT: number
 ) {
   if (shipActionFlagsRef.current.directionRightIsActive) {
@@ -31,8 +33,8 @@ export function updateShipDirection(
 }
 
 export function updateShipPosition(
-  shipParams: any,
-  shipActionFlagsRef: any,
+  shipParams: ShipParamsType,
+  shipActionFlagsRef: ShipActionFlagsRefType,
   deltaTime: number
 ) {
   const unitY = Math.sin(shipParams.current.shipAngle);
@@ -80,7 +82,7 @@ export function updateShipPosition(
     0.5 * accelY * (deltaTime / 1000) ** 2;
 }
 
-export function shipReset(shipParams: any) {
+export function shipReset(shipParams: ShipParamsType) {
   shipParams.current.shipAngle = 0;
   shipParams.current.shipX = 200;
   shipParams.current.shipY = 350;
@@ -89,7 +91,7 @@ export function shipReset(shipParams: any) {
   shipParams.current.shipAcceleration = 200;
 }
 
-export function bounceShipOffWall(shipParams: any) {
+export function bounceShipOffWall(shipParams: ShipParamsType) {
   if (
     shipParams.current.shipX >= window.innerWidth - 16 ||
     shipParams.current.shipX <= 0
@@ -104,7 +106,10 @@ export function bounceShipOffWall(shipParams: any) {
   }
 }
 
-export function shipBooster(shipParams: any, shipActionFlagsRef: any) {
+export function shipBooster(
+  shipParams: ShipParamsType,
+  shipActionFlagsRef: ShipActionFlagsRefType
+) {
   if (shipActionFlagsRef.current.spacebarIsActive === true) {
     shipParams.current.shipAcceleration = 600;
   } else {

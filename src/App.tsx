@@ -12,6 +12,7 @@ import {
   bounceShipOffWall,
   shipBooster,
 } from "./utils/loopFunctions";
+
 import "./App.css";
 
 function App() {

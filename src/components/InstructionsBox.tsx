@@ -1,4 +1,10 @@
-export default function InstructionsBox(props: any) {
+import { ShipParamsType } from "../types";
+
+export default function InstructionsBox(props: {
+  time: number;
+  deltaTime: number;
+  shipParams: ShipParamsType;
+}) {
   return (
     <>
       <div className="top-right-container">

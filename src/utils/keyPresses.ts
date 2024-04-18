@@ -1,4 +1,9 @@
-const handleKeyDown = (event: any, shipActionFlagsRef: any) => {
+import { ShipActionFlagsRefType } from "../types";
+
+const handleKeyDown = (
+  event: any,
+  shipActionFlagsRef: ShipActionFlagsRefType
+) => {
   if (event.key === "ArrowLeft" || event.key === "a") {
     shipActionFlagsRef.current.directionLeftIsActive = true;
   } else if (event.key === "ArrowRight" || event.key === "d") {
@@ -12,7 +17,10 @@ const handleKeyDown = (event: any, shipActionFlagsRef: any) => {
   }
 };
 
-const handleKeyUp = (event: any, shipActionFlagsRef: any) => {
+const handleKeyUp = (
+  event: any,
+  shipActionFlagsRef: ShipActionFlagsRefType
+) => {
   if (event.key === "ArrowLeft" || event.key === "a") {
     shipActionFlagsRef.current.directionLeftIsActive = false;
   } else if (event.key === "ArrowRight" || event.key === "d") {

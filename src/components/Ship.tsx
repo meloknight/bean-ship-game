@@ -1,4 +1,9 @@
-export default function Ship(props: any) {
+import { ShipParamsType, ShipActionFlagsRefType } from "../types";
+
+export default function Ship(props: {
+  shipParams: ShipParamsType;
+  shipActionFlagsRef: ShipActionFlagsRefType;
+}) {
   const shipStyle = {
     transform: `translateX(${props.shipParams.current.shipX}px) translateY(${props.shipParams.current.shipY}px) rotate(${props.shipParams.current.shipAngle}rad)`,
   };
