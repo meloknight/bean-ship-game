@@ -39,7 +39,7 @@ export function updateShipPosition(
   const unitX = Math.cos(shipParams.current.shipAngle);
   let accelX = 0;
   let accelY = 0;
-  const shipSpeedLimit: number = 400;
+  const shipSpeedLimit: number = 550;
 
   // update the velocity when the ship is accelerating
   if (shipActionFlagsRef.current.directionUpIsActive) {
@@ -58,8 +58,17 @@ export function updateShipPosition(
       shipParams.current.shipSpeedX = -shipSpeedLimit;
     }
 
-    shipParams.current.shipSpeedY +=
-      unitY * shipParams.current.shipAcceleration * (deltaTime / 1000);
+    if (
+      shipParams.current.shipSpeedY <= shipSpeedLimit &&
+      shipParams.current.shipSpeedY >= -shipSpeedLimit
+    ) {
+      shipParams.current.shipSpeedY +=
+        unitY * shipParams.current.shipAcceleration * (deltaTime / 1000);
+    } else if (shipParams.current.shipSpeedY > shipSpeedLimit) {
+      shipParams.current.shipSpeedY = shipSpeedLimit;
+    } else {
+      shipParams.current.shipSpeedY = -shipSpeedLimit;
+    }
   }
 
   shipParams.current.shipX +=
@@ -77,7 +86,7 @@ export function shipReset(shipParams: any) {
   shipParams.current.shipY = 350;
   shipParams.current.shipSpeedX = 0;
   shipParams.current.shipSpeedY = 0;
-  shipParams.current.shipAcceleration = 100;
+  shipParams.current.shipAcceleration = 200;
 }
 
 export function bounceShipOffWall(shipParams: any) {
@@ -92,5 +101,13 @@ export function bounceShipOffWall(shipParams: any) {
     shipParams.current.shipY <= 0
   ) {
     shipParams.current.shipSpeedY *= -1;
+  }
+}
+
+export function shipBooster(shipParams: any, shipActionFlagsRef: any) {
+  if (shipActionFlagsRef.current.spacebarIsActive === true) {
+    shipParams.current.shipAcceleration = 600;
+  } else {
+    shipParams.current.shipAcceleration = 200;
   }
 }

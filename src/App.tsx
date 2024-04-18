@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef } from "react";
+import Ship from "./components/Ship";
+import InstructionsBox from "./components/InstructionsBox";
+
 import { useFrameLoop } from "./utils/frameLoop";
 import { handleKeyDown, handleKeyUp } from "./utils/keyPresses";
 import {
@@ -7,10 +10,12 @@ import {
   updateShipPosition,
   shipReset,
   bounceShipOffWall,
+  shipBooster,
 } from "./utils/loopFunctions";
 import "./App.css";
 
 function App() {
+  // constants, state, and refs
   const SHIP_ANGLE_CONSTANT: number = 0.1;
   const [time, setTime] = useState(0);
   const [deltaTime, setDeltaTime] = useState(0);
@@ -20,7 +25,7 @@ function App() {
     shipY: 350,
     shipSpeedX: 0,
     shipSpeedY: 0,
-    shipAcceleration: 100,
+    shipAcceleration: 200,
   });
   const shipActionFlagsRef = useRef({
     directionLeftIsActive: false,
@@ -32,14 +37,15 @@ function App() {
   const [color, setColor] = useState("");
   let nextColor = -1;
 
-  // THE BIG LOOP!
+  // THE GAME LOOP!
   useFrameLoop((time: number, deltaTime: number) => {
     backgroundColorChanger(time, nextColor, setColor);
 
     updateShipDirection(shipActionFlagsRef, shipParams, SHIP_ANGLE_CONSTANT);
 
     updateShipPosition(shipParams, shipActionFlagsRef, deltaTime);
-    console.log(window.innerWidth);
+
+    shipBooster(shipParams, shipActionFlagsRef);
 
     bounceShipOffWall(shipParams);
 
@@ -47,6 +53,7 @@ function App() {
     setDeltaTime(deltaTime);
   });
 
+  // KEYDOWN AND KEYUP USEEFFECTS
   useEffect(() => {
     document.addEventListener("keydown", () =>
       handleKeyDown(event, shipActionFlagsRef)
@@ -69,51 +76,20 @@ function App() {
     };
   }, []);
 
-  function Ship() {
-    const shipStyle = {
-      transform: `translateX(${shipParams.current.shipX}px) translateY(${shipParams.current.shipY}px) rotate(${shipParams.current.shipAngle}rad)`,
-    };
-    return (
-      <>
-        <div className="pill-ship" style={shipStyle}>
-          <div
-            // ref={shipElementRef}
-            className={`ship-flame-off ${
-              shipActionFlagsRef.current.directionUpIsActive === true
-                ? "ship-flame"
-                : ""
-            }`}
-          ></div>
-        </div>
-      </>
-    );
-  }
-
   return (
     <div className="game-container" style={{ background: color }}>
-      <Ship />
-      <div className="top-left-container">
-        <p>Time:</p>
-        <p>{parseFloat(time.toPrecision(5))}</p>
-        <p>deltaTime:</p>
-        <p>{parseFloat(deltaTime.toPrecision(5))}</p>
-        <p>
-          shipAngle: {parseFloat(shipParams.current.shipAngle.toPrecision(3))}
-        </p>
-        <p>shipX: {parseFloat(shipParams.current.shipX.toPrecision(3))}</p>
-        <p>shipY: {parseFloat(shipParams.current.shipY.toPrecision(3))}</p>
-        <p>
-          shipSpeedX: {parseFloat(shipParams.current.shipSpeedX.toPrecision(3))}
-        </p>
-        <p>
-          shipSpeedY: {parseFloat(shipParams.current.shipSpeedY.toPrecision(3))}
-        </p>
-        <p>
-          shipAcceleration:{" "}
-          {parseFloat(shipParams.current.shipAcceleration.toPrecision(3))}
-        </p>
+      <Ship shipParams={shipParams} shipActionFlagsRef={shipActionFlagsRef} />
+      <nav>
         <button onClick={() => shipReset(shipParams)}>RESET</button>
-      </div>
+        <div className="title-container">
+          <h1>BEAN SHIP</h1>
+        </div>
+        <InstructionsBox
+          time={time}
+          deltaTime={deltaTime}
+          shipParams={shipParams}
+        />
+      </nav>
     </div>
   );
 }
