@@ -17,7 +17,7 @@ export function updateShipDirection(
   SHIP_ANGLE_CONSTANT: number,
   deltaTime: number
 ) {
-  const adjustedAngleConstant = SHIP_ANGLE_CONSTANT / deltaTime;
+  const adjustedAngleConstant = SHIP_ANGLE_CONSTANT * deltaTime;
 
   if (shipActionFlagsRef.current.directionRightIsActive) {
     if (shipParams.current.shipAngle + adjustedAngleConstant >= 2 * Math.PI) {
