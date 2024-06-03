@@ -17,7 +17,7 @@ import "./App.css";
 
 function App() {
   // constants, state, and refs
-  const SHIP_ANGLE_CONSTANT: number = 0.1;
+  const SHIP_ANGLE_CONSTANT: number = 2;
   const [time, setTime] = useState(0);
   const [deltaTime, setDeltaTime] = useState(0);
   const shipParams = useRef({
@@ -42,7 +42,12 @@ function App() {
   useFrameLoop((time: number, deltaTime: number) => {
     backgroundColorChanger(time, nextColor, setColor);
 
-    updateShipDirection(shipActionFlagsRef, shipParams, SHIP_ANGLE_CONSTANT);
+    updateShipDirection(
+      shipActionFlagsRef,
+      shipParams,
+      SHIP_ANGLE_CONSTANT,
+      deltaTime
+    );
 
     updateShipPosition(shipParams, shipActionFlagsRef, deltaTime);
 

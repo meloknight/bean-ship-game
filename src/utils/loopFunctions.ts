@@ -14,20 +14,23 @@ export function backgroundColorChanger(
 export function updateShipDirection(
   shipActionFlagsRef: ShipActionFlagsRefType,
   shipParams: ShipParamsType,
-  SHIP_ANGLE_CONSTANT: number
+  SHIP_ANGLE_CONSTANT: number,
+  deltaTime: number
 ) {
+  const adjustedAngleConstant = SHIP_ANGLE_CONSTANT / deltaTime;
+
   if (shipActionFlagsRef.current.directionRightIsActive) {
-    if (shipParams.current.shipAngle + SHIP_ANGLE_CONSTANT >= 2 * Math.PI) {
+    if (shipParams.current.shipAngle + adjustedAngleConstant >= 2 * Math.PI) {
       shipParams.current.shipAngle = 0;
     } else {
-      shipParams.current.shipAngle += SHIP_ANGLE_CONSTANT;
+      shipParams.current.shipAngle += adjustedAngleConstant;
     }
   }
   if (shipActionFlagsRef.current.directionLeftIsActive) {
-    if (shipParams.current.shipAngle - SHIP_ANGLE_CONSTANT <= 0) {
+    if (shipParams.current.shipAngle - adjustedAngleConstant <= 0) {
       shipParams.current.shipAngle = 2 * Math.PI;
     } else {
-      shipParams.current.shipAngle -= SHIP_ANGLE_CONSTANT;
+      shipParams.current.shipAngle -= adjustedAngleConstant;
     }
   }
 }
