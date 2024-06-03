@@ -17,7 +17,7 @@ import "./App.css";
 
 function App() {
   // constants, state, and refs
-  const SHIP_ANGLE_CONSTANT: number = 30;
+  const SHIP_ANGLE_CONSTANT: number = 0.1;
   const [time, setTime] = useState(0);
   const [deltaTime, setDeltaTime] = useState(0);
   const shipParams = useRef({
