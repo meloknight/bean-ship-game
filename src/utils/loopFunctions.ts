@@ -21,6 +21,8 @@ export function updateShipDirection(
   const normalizedDeltaTo60FPS = deltaFPS / 60;
   const adjustedAngleConstant = SHIP_ANGLE_CONSTANT / normalizedDeltaTo60FPS;
 
+  console.log(adjustedAngleConstant);
+
   if (shipActionFlagsRef.current.directionRightIsActive) {
     if (shipParams.current.shipAngle + adjustedAngleConstant >= 2 * Math.PI) {
       shipParams.current.shipAngle = 0;
