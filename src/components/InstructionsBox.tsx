@@ -18,7 +18,6 @@ export default function InstructionsBox(props: {
         <p>Click the Reset button to start from initial position</p>
         <br />
         <h1>Information: </h1>
-
         <p>Time [s]: {parseFloat((props.time / 1000).toPrecision(5))}</p>
         <p>deltaTime [ms]: {parseFloat(props.deltaTime.toPrecision(5))}</p>
         <p>
