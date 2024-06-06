@@ -8,6 +8,17 @@ export default function InstructionsBox(props: {
   return (
     <>
       <div className="top-right-container">
+        <h1>Instructions: </h1>
+        <p>[w] or [upArrow] = thrusters</p>
+        <br />
+        <p>[a] and [d] OR [leftArrow] and [rightArrow] = change direction</p>
+        <br />
+        <p>[spacebar] + thrusters ([w] or [upArrow]) = boosters</p>
+        <br />
+        <p>Click the Reset button to start from initial position</p>
+        <br />
+        <h1>Information: </h1>
+
         <p>Time [s]: {parseFloat((props.time / 1000).toPrecision(5))}</p>
         <p>deltaTime [ms]: {parseFloat(props.deltaTime.toPrecision(5))}</p>
         <p>
@@ -34,15 +45,6 @@ export default function InstructionsBox(props: {
           shipAcceleration [px/s^2]:{" "}
           {parseFloat(props.shipParams.current.shipAcceleration.toPrecision(3))}
         </p>
-        <br />
-        <h1>Instructions: </h1>
-        <p>[w] or [upArrow] = thrusters</p>
-        <br />
-        <p>[a] and [d] OR [leftArrow] and [rightArrow] = change direction</p>
-        <br />
-        <p>[spacebar] + thrusters ([w] or [upArrow]) = boosters</p>
-        <br />
-        <p>Click the Reset button to start from initial position</p>
       </div>
     </>
   );
